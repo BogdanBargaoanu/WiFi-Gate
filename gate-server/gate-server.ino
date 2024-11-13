@@ -33,15 +33,16 @@ const char *HTML_CONTENT = R"(
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Garage Door Control</title>
+    <title>Wireless Garage Door Control</title>
     <style>
         body {
             text-align: center;
-            font-family: Arial, sans-serif;
+            font-family: Verdana, Tahoma, sans-serif;
             overflow: hidden;
+            background-color: #fff9da;
         }
         button {
-            background-color: #4CAF50; /* Green */
+            background-color: #3254a8; /* Blue */
             border: none;
             color: white;
             padding: 15px 32px;
@@ -49,27 +50,32 @@ const char *HTML_CONTENT = R"(
             text-decoration: none;
             display: inline-block;
             font-size: 16px;
+            font-family: Verdana, Tahoma, sans-serif;
             margin: 4px 2px;
             cursor: pointer;
+            border-radius: 2rem;
+            box-shadow: 5px 5px 5px #3f3e3e;
+            margin-top: 1rem;
         }
+
         .app {
             width: 100vw;
             height: 100vh;
             overflow: hidden;
             display: flex;
             align-items: center;
-            justify-content: center;   
-            flex-direction: column;           
+            justify-content: center;
+            flex-direction: column;
         }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
-  <div class="app">  
-    <h1>Garage Door Control</h1>
-    <button onclick="window.location.href='/H'">Open Garage Door</button>
-    <button onclick="window.location.href='/L'">Close Garage Door</button>
-  </div>
+    <div class="app">
+        <h1>Garage Door Control</h1>
+        <button onclick="window.location.href='/Open'">Open Garage Door</button>
+        <button onclick="window.location.href='/Close'">Close Garage Door</button>
+    </div>
 </body>
 </html>
 )";
@@ -138,11 +144,11 @@ void loop() {
         }
 
         // Check to see if the client request was "GET /H" or "GET /L":
-        if (currentLine.endsWith("GET /H")) {
-          digitalWrite(5, HIGH);  // GET /H turns the LED on
+        if (currentLine.endsWith("GET /Open")) {
+          client.println("OPENING");
         }
-        if (currentLine.endsWith("GET /L")) {
-          digitalWrite(5, LOW);  // GET /L turns the LED off
+        if (currentLine.endsWith("GET /Close")) {
+          client.println("CLOSING");
         }
       }
     }
