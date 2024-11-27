@@ -1,7 +1,10 @@
 #include <ESP8266WiFi.h>
+#include <Servo.h>
 
 const char *ssid = "Bogdan's S22";
 const char *password = "BogdanWifi";
+const int servoPin = 12;
+Servo myServo;
 
 const char *HTML_CONTENT = R"(
 <!DOCTYPE html>
@@ -59,6 +62,7 @@ WiFiServer server(80);  // Create a web server on port 80
 void setup() {
   Serial.begin(115200);
   pinMode(5, OUTPUT);  // Set the LED pin mode
+  myServo.attach(servoPin);
   
   delay(10);
 
@@ -109,6 +113,9 @@ void loop() {
         if (currentLine.endsWith("GET /Open")) {
           Serial.println("Opening Garage Door...");
           client.println("Garage Door is Opening...");
+          myServo.write(90);
+          delay(2000);
+          myServo.write(0);
           digitalWrite(5, HIGH);  // Example action
         }
         if (currentLine.endsWith("GET /Close")) {
