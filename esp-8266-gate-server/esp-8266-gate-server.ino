@@ -53,14 +53,30 @@ const char *HTML_CONTENT = R"(
     </style>
     <script>
         async function updateButtonStates() {
-            const response = await fetch('/status');
-            const { infrared } = await response.json();
-            document.getElementById('closeBtn').disabled = infrared;
+            try {
+                const response = await fetch('/status');
+                if (!response.ok) {
+                    console.error('Failed to fetch status');
+                    return;
+                }
+                const { infrared } = await response.json();
+                document.getElementById('closeBtn').disabled = infrared;
+            } catch (error) {
+                console.error('Error updating button states:', error);
+            }
         }
 
         async function controlDoor(action) {
-            await fetch(`/${action}`);
-            updateButtonStates();
+            try {
+                const response = await fetch(`/${action}`);
+                if (!response.ok) {
+                    console.error(`Failed to send ${action} command`);
+                    return;
+                }
+                updateButtonStates();
+            } catch (error) {
+                console.error(`Error controlling door (${action}):`, error);
+            }
         }
 
         // Attach event listeners after the page loads
@@ -93,6 +109,7 @@ void setup() {
   Serial.begin(115200);
   pinMode(5, OUTPUT);  // Set the LED pin mode
   myServo.attach(servoPin);
+  pinMode(infraredSensorPin, INPUT);
 
   delay(10);
 
@@ -118,50 +135,77 @@ void loop() {
   if (client) {
     Serial.println("New Client connected.");
     String currentLine = "";
+    String request = "";
 
     while (client.connected()) {
       if (client.available()) {
         char c = client.read();
         Serial.write(c);
+        request += c;
 
-        if (c == '\n') {
-          if (currentLine.length() == 0) {
-            // Send HTTP response
+        // End of the HTTP request headers
+        if (c == '\n' && currentLine.length() == 0) {
+          if (request.startsWith("GET /status")) {
+            // Handle /status endpoint
+            bool infrared = digitalRead(infraredSensorPin);
+            Serial.print("Infrared Sensor State: ");
+            Serial.println(infrared);
+
+            client.println("HTTP/1.1 200 OK");
+            client.println("Content-Type: application/json");
+            client.println("Connection: close");
+            client.println();
+            client.printf("{\"infrared\": %s}", infrared ? "false" : "true");
+          } else if (request.startsWith("GET /Open")) {
+            // Handle /Open endpoint
+            Serial.println("Opening Garage Door...");
+            myServo.write(90);
+            delay(2000);
+            myServo.write(0);
+
+            client.println("HTTP/1.1 200 OK");
+            client.println("Content-Type: text/plain");
+            client.println("Connection: close");
+            client.println();
+            client.println("Garage door opened.");
+          } else if (request.startsWith("GET /Close")) {
+            // Handle /Close endpoint
+            if (!digitalRead(infraredSensorPin)) {
+              Serial.println("Closing Garage Door...");
+              myServo.write(0);
+              client.println("HTTP/1.1 200 OK");
+              client.println("Content-Type: text/plain");
+              client.println("Connection: close");
+              client.println();
+              client.println("Garage door closed.");
+            } else {
+              Serial.println("Cannot close the garage door due to obstruction.");
+              client.println("HTTP/1.1 400 Bad Request");
+              client.println("Content-Type: text/plain");
+              client.println("Connection: close");
+              client.println();
+              client.println("Obstruction detected. Cannot close the door.");
+            }
+          } else {
+            // Serve the HTML page
             client.println("HTTP/1.1 200 OK");
             client.println("Content-Type: text/html");
+            client.println("Connection: close");
             client.println();
             client.print(HTML_CONTENT);
-            break;
-          } else {
-            // Handle specific endpoints
-            if (currentLine.startsWith("GET /Open")) {
-              Serial.println("Opening Garage Door...");
-              myServo.write(90);
-              delay(2000);
-              myServo.write(0);
-            } else if (currentLine.startsWith("GET /Close")) {
-              if (!digitalRead(infraredSensorPin)) {
-                Serial.println("Closing Garage Door...");
-                myServo.write(0);
-              } else {
-                Serial.println("Cannot close the garage door due to obstruction.");
-              }
-            } else if (currentLine.startsWith("GET /status")) {
-              bool infrared = digitalRead(infraredSensorPin);
-              client.println("HTTP/1.1 200 OK");
-              client.println("Content-Type: application/json");
-              client.println();
-              client.printf("{\"infrared\": %s}", infrared ? "true" : "false");
-            }
-            currentLine = "";
           }
+          break;
+        }
+
+        // Keep track of the current line
+        if (c == '\n') {
+          currentLine = "";
         } else if (c != '\r') {
           currentLine += c;
         }
       }
     }
-
-
+    // Close the client connection
     client.stop();
     Serial.println("Client disconnected.");
   }
