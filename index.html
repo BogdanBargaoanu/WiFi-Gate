@@ -28,6 +28,12 @@
             margin-top: 1rem;
         }
 
+        button:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+        }
+
         .app {
             width: 100vw;
             height: 100vh;
@@ -45,8 +51,27 @@
     <div class="app">
         <h1>Garage Door Control</h1>
         <button onclick="window.location.href='/Open'">Open Garage Door</button>
-        <button onclick="window.location.href='/Close'">Close Garage Door</button>
+        <button id="closeBtn" onclick="window.location.href='/Close'">Close Garage Door</button>
+        <button onclick="disableButton()">Test</button>
     </div>
+    <script>
+        async function updateButtonStates() {
+            const response = await fetch('/status');
+            const { infrared } = await response.json();
+            document.getElementById('closeBtn').disabled = infrared;
+        }
+
+        function disableButton() {
+            document.getElementById('closeBtn').disabled = true;
+        }
+
+        async function controlDoor(action) {
+            await fetch(`/${action}`);
+            updateButtonStates();
+        }
+
+        window.onload = updateButtonStates;
+    </script>
 </body>
 
 </html>

@@ -5,6 +5,7 @@ const char *ssid = "Bogdan's S22";
 const char *password = "BogdanWifi";
 const int servoPin = 12;
 Servo myServo;
+const int infraredSensorPin = 4;
 
 const char *HTML_CONTENT = R"(
 <!DOCTYPE html>
@@ -35,6 +36,11 @@ const char *HTML_CONTENT = R"(
             margin-top: 1rem;
         }
 
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
         .app {
             width: 100vw;
             height: 100vh;
@@ -45,13 +51,37 @@ const char *HTML_CONTENT = R"(
             flex-direction: column;
         }
     </style>
+    <script>
+        async function updateButtonStates() {
+            const response = await fetch('/status');
+            const { infrared } = await response.json();
+            document.getElementById('closeBtn').disabled = infrared;
+        }
+
+        async function controlDoor(action) {
+            await fetch(`/${action}`);
+            updateButtonStates();
+        }
+
+        // Attach event listeners after the page loads
+        window.onload = function () {
+            document.getElementById('openBtn').addEventListener('click', function () {
+                controlDoor('Open');
+            });
+            document.getElementById('closeBtn').addEventListener('click', function () {
+                controlDoor('Close');
+            });
+            updateButtonStates();
+        };
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
     <div class="app">
         <h1>Garage Door Control</h1>
-        <button onclick="window.location.href='/Open'">Open Garage Door</button>
-        <button onclick="window.location.href='/Close'">Close Garage Door</button>
+        <button id="openBtn">Open Garage Door</button>
+        <button id="closeBtn">Close Garage Door</button>
+        <h1 id="text-content"></h1>
     </div>
 </body>
 </html>
@@ -63,7 +93,7 @@ void setup() {
   Serial.begin(115200);
   pinMode(5, OUTPUT);  // Set the LED pin mode
   myServo.attach(servoPin);
-  
+
   delay(10);
 
   // Connect to Wi-Fi network
@@ -103,28 +133,34 @@ void loop() {
             client.print(HTML_CONTENT);
             break;
           } else {
+            // Handle specific endpoints
+            if (currentLine.startsWith("GET /Open")) {
+              Serial.println("Opening Garage Door...");
+              myServo.write(90);
+              delay(2000);
+              myServo.write(0);
+            } else if (currentLine.startsWith("GET /Close")) {
+              if (!digitalRead(infraredSensorPin)) {
+                Serial.println("Closing Garage Door...");
+                myServo.write(0);
+              } else {
+                Serial.println("Cannot close the garage door due to obstruction.");
+              }
+            } else if (currentLine.startsWith("GET /status")) {
+              bool infrared = digitalRead(infraredSensorPin);
+              client.println("HTTP/1.1 200 OK");
+              client.println("Content-Type: application/json");
+              client.println();
+              client.printf("{\"infrared\": %s}", infrared ? "true" : "false");
+            }
             currentLine = "";
           }
         } else if (c != '\r') {
           currentLine += c;
         }
-
-        // Process HTTP GET requests for "Open" and "Close"
-        if (currentLine.endsWith("GET /Open")) {
-          Serial.println("Opening Garage Door...");
-          client.println("Garage Door is Opening...");
-          myServo.write(90);
-          delay(2000);
-          myServo.write(0);
-          digitalWrite(5, HIGH);  // Example action
-        }
-        if (currentLine.endsWith("GET /Close")) {
-          Serial.println("Closing Garage Door...");
-          client.println("Garage Door is Closing...");
-          digitalWrite(5, LOW);  // Example action
-        }
       }
     }
+
 
     client.stop();
     Serial.println("Client disconnected.");
