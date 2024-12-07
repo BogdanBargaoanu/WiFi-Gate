@@ -68,10 +68,20 @@ const char *HTML_CONTENT = R"(
 
         async function controlDoor(action) {
             try {
-                const response = await fetch(`/${action}`);
-                if (!response.ok) {
+                if (action === 'Open') {
+                  const response = await fetch(`/${action}`);
+                  if (!response.ok) {
                     console.error(`Failed to send ${action} command`);
                     return;
+                  }
+                  setTimeout(() => controlDoor('Close'), 5000);
+                }
+                else {
+                  const response = await fetch(`/${action}`);
+                  if (!response.ok) {
+                    console.error(`Failed to send ${action} command`);
+                    return;
+                  }
                 }
                 updateButtonStates();
             } catch (error) {
