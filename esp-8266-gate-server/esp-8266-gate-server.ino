@@ -1,8 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <Servo.h>
 
-const char *ssid = "Bogdan's S22";
-const char *password = "BogdanWifi";
+const char *ssid = "YourSSID";
+const char *password = "YourPassword";
 const int servoPin = 12;
 Servo myServo;
 const int infraredSensorPin = 4;
