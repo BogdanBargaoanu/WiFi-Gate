@@ -79,6 +79,8 @@ const char *HTML_CONTENT = R"(
             }
         }
 
+        setInterval(updateButtonStates, 1000);
+
         // Attach event listeners after the page loads
         window.onload = function () {
             document.getElementById('openBtn').addEventListener('click', function () {
@@ -159,10 +161,7 @@ void loop() {
           } else if (request.startsWith("GET /Open")) {
             // Handle /Open endpoint
             Serial.println("Opening Garage Door...");
-            myServo.write(90);
-            delay(2000);
-            myServo.write(0);
-
+            myServo.write(180);
             client.println("HTTP/1.1 200 OK");
             client.println("Content-Type: text/plain");
             client.println("Connection: close");
@@ -170,7 +169,7 @@ void loop() {
             client.println("Garage door opened.");
           } else if (request.startsWith("GET /Close")) {
             // Handle /Close endpoint
-            if (!digitalRead(infraredSensorPin)) {
+            if (digitalRead(infraredSensorPin)) {
               Serial.println("Closing Garage Door...");
               myServo.write(0);
               client.println("HTTP/1.1 200 OK");
