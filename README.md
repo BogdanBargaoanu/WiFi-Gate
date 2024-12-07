@@ -52,3 +52,6 @@ The built-in web interface allows users to control the garage door with simple b
 ## Safety Notes
 - Ensure the infrared sensor is properly calibrated to detect obstructions effectively.
 - Test the servo motor and door mechanism before full deployment.
+
+## Schematic
+![Acc:](https://raw.githubusercontent.com/BogdanBargaoanu/wifi-gate/refs/heads/main/doc/circuit-view.png)
