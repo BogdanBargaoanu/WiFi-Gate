@@ -49,6 +49,8 @@
 ## Web Interface
 The built-in web interface allows users to control the garage door with simple buttons. It also dynamically updates the button states based on the infrared sensor readings.
 
+![Acc:](https://raw.githubusercontent.com/BogdanBargaoanu/wifi-gate/refs/heads/main/doc/preview.png)
+
 ## Schematic
 ![Acc:](https://raw.githubusercontent.com/BogdanBargaoanu/wifi-gate/refs/heads/main/doc/circuit-view.png)
 
