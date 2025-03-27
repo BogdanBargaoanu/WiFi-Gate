@@ -1,8 +1,35 @@
-# WiFi-Gate Server Application
+<div align="center" class="text-center">
+  <h1>WiFi-Gate</h1>
+  <p><em>Lightweight, ESP8266/ESP32-based server application for wireless garage door control.</em></p>
+
+  <img alt="last-commit" src="https://img.shields.io/github/last-commit/BogdanBargaoanu/WiFi-Gate?style=flat&logo=git&logoColor=white&color=0080ff">
+  <img alt="repo-top-language" src="https://img.shields.io/github/languages/top/BogdanBargaoanu/WiFi-Gate?style=flat&color=0080ff">
+  <img alt="repo-language-count" src="https://img.shields.io/github/languages/count/BogdanBargaoanu/WiFi-Gate?style=flat&color=0080ff">
+
+  <p><em>Built with the tools and technologies:</em></p>
+
+  <h3>Firmware & IoT</h3>
+  <img alt="ESP8266" src="https://img.shields.io/badge/ESP8266-000000.svg?style=flat&logo=espressif&logoColor=white">
+  <img alt="ESP32" src="https://img.shields.io/badge/ESP32-000000.svg?style=flat&logo=espressif&logoColor=white">
+  <img alt="Arduino" src="https://img.shields.io/badge/Arduino-00979D.svg?style=flat&logo=Arduino&logoColor=white">
+  <img alt="C++" src="https://img.shields.io/badge/C++-00599C.svg?style=flat&logo=c%2B%2B&logoColor=white">
+
+  <h3>Web Interface</h3>
+  <img alt="HTML5" src="https://img.shields.io/badge/HTML5-E34F26.svg?style=flat&logo=html5&logoColor=white">
+  <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=flat&logo=javascript&logoColor=black">
+
+  <h3>Additional Tools</h3>
+  <img alt="WiFi" src="https://img.shields.io/badge/WiFi-000000.svg?style=flat">
+  <br>
+  <br>
+  <br>
+
+  [![License: MIT](https://img.shields.io/badge/License-MIT-g.svg)](https://opensource.org/licenses/MIT)
+  <br>
+  <br>
 
 **WiFi-Gate** is a lightweight, ESP8266 or ESP32-based server application for wireless garage door control. It provides a web interface for opening and closing your garage door, with added safety features to detect obstructions using an infrared sensor.
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-g.svg)](https://opensource.org/licenses/MIT)
+</div>
 
 ## Features
 - **Remote Control**: Open and close your garage door via a web interface accessible on your local Wi-Fi network.
@@ -48,6 +75,8 @@
 
 ## Web Interface
 The built-in web interface allows users to control the garage door with simple buttons. It also dynamically updates the button states based on the infrared sensor readings.
+
+![Acc:](https://raw.githubusercontent.com/BogdanBargaoanu/wifi-gate/refs/heads/main/doc/preview.png)
 
 ## Schematic
 ![Acc:](https://raw.githubusercontent.com/BogdanBargaoanu/wifi-gate/refs/heads/main/doc/circuit-view.png)
