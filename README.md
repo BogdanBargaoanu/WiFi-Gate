@@ -1,5 +1,5 @@
 <div align="center" class="text-center">
-  <img src="https://raw.githubusercontent.com/BogdanBargaoanu/WiFi-Gate/refs/heads/main/doc/wifigate_logo.png" style="width: 200px;" />
+  <img src="https://raw.githubusercontent.com/BogdanBargaoanu/WiFi-Gate/refs/heads/main/doc/wifigate_logo.png" style="width: 150px;" />
   <h1>WiFi-Gate</h1>
   <p><em>Lightweight, ESP8266/ESP32-based server application for wireless garage door control.</em></p>
 
